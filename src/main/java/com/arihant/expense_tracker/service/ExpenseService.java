@@ -2,6 +2,7 @@ package com.arihant.expense_tracker.service;
 
 import com.arihant.expense_tracker.dto.ExpenseRequestDto;
 import com.arihant.expense_tracker.dto.ExpenseResponseDto;
+import com.arihant.expense_tracker.dto.ExpenseUpdateRequestDto;
 import com.arihant.expense_tracker.entity.Expense;
 import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.exception.ResourceNotFoundException;
@@ -106,5 +107,51 @@ public class ExpenseService {
         expenseRepo.delete(exp);
 
         return "Expense deleted";
+    }
+
+    public ExpenseResponseDto updateExpense(Long expId, ExpenseUpdateRequestDto requestDto){
+
+        User user = getAuthenticatedUser();
+        Expense expense = expenseRepo.findByExpIdAndUser(expId,user).orElseThrow(() ->
+                new ResourceNotFoundException("Expense not found"));
+
+        if(requestDto.getTitle() != null){
+            expense.setTitle(requestDto.getTitle());
+        }
+
+        if(requestDto.getCategory() != null){
+            expense.setCategory(requestDto.getCategory());
+        }
+
+        if(requestDto.getType() != null){
+            expense.setType(requestDto.getType());
+        }
+
+        if(requestDto.getAmount() != null){
+            expense.setAmount(requestDto.getAmount());
+        }
+
+        if(requestDto.getExpenseDate() != null){
+            expense.setExpenseDate(requestDto.getExpenseDate());
+        }
+
+        if(requestDto.getRemark() != null){
+            expense.setRemark(requestDto.getRemark());
+        }
+
+        Expense responseExpense= expenseRepo.save(expense);
+
+        ExpenseResponseDto responseDto = new ExpenseResponseDto();
+
+        responseDto.setId(responseExpense.getExpId());
+        responseDto.setExpenseDate(responseExpense.getExpenseDate());
+        responseDto.setAmount(responseExpense.getAmount());
+        responseDto.setRemark(responseExpense.getRemark());
+        responseDto.setType(responseExpense.getType());
+        responseDto.setCategory(responseExpense.getCategory());
+        responseDto.setTitle(responseExpense.getTitle());
+        responseDto.setEntryDateTime(responseExpense.getEntryDateTime());
+
+        return responseDto;
     }
 }
