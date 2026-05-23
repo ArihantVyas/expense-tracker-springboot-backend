@@ -31,12 +31,12 @@ public class ExpenseController {
         return new ResponseEntity<>(expenseService.getAll(),HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-exp/{id}")
+    @DeleteMapping("/delete-exp/{expId}")
     public ResponseEntity<String> deleteExpense(@PathVariable Long expId){
         return new ResponseEntity<>(expenseService.deleteExpense(expId),HttpStatus.OK);
     }
 
-    @PatchMapping("/update-exp/{id}")
+    @PatchMapping("/update-exp/{expId}")
     public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long expId, @RequestBody ExpenseUpdateRequestDto requestDto){
         ExpenseResponseDto res = expenseService.updateExpense(expId,requestDto);
         return new ResponseEntity<>(res,HttpStatus.OK);
