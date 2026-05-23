@@ -5,7 +5,6 @@ import com.arihant.expense_tracker.dto.ExpenseResponseDto;
 import com.arihant.expense_tracker.dto.ExpenseUpdateRequestDto;
 import com.arihant.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
