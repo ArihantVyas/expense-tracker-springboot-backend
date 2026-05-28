@@ -3,10 +3,7 @@ package com.arihant.expense_tracker.controller;
 import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -22,6 +19,11 @@ public class UserAuthController {
     public String createNewUser(@RequestBody @Valid UserRegisterDto registerDto){
 
         return userService.registerUser(registerDto);
+    }
+
+    @DeleteMapping("/delete-usr")
+    public String deleteUser(){
+        return userService.deleteUser();
     }
 
 
