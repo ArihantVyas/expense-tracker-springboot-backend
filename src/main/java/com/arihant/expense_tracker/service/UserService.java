@@ -1,5 +1,6 @@
 package com.arihant.expense_tracker.service;
 
+import com.arihant.expense_tracker.dto.AdminFetchUsersDto;
 import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.repository.UserRepository;
@@ -7,6 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -64,6 +68,23 @@ public class UserService {
         userRepository.save(user);
 
         return "User Updated";
+    }
+
+    public List<AdminFetchUsersDto> getAllUsersForAdmin(){
+        List<User> users = userRepository.findAll();
+        List<AdminFetchUsersDto> usersDtoList = new ArrayList<>();
+
+        for(User user : users){
+            AdminFetchUsersDto dto = new AdminFetchUsersDto();
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole());
+
+            usersDtoList.add(dto);
+        }
+
+        return usersDtoList;
+
     }
 
 
