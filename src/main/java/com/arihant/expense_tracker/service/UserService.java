@@ -36,6 +36,7 @@ public class UserService {
         newUser.setUsername(registerDto.getUsername());
         newUser.setEmail(registerDto.getEmail());
         newUser.setPassword(registerDto.getPassword());
+        newUser.setRole("USER");
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
@@ -58,6 +59,7 @@ public class UserService {
         user.setUsername(updUsr.getUsername());
         user.setPassword(passwordEncoder.encode(updUsr.getPassword()));
         user.setEmail(updUsr.getEmail());
+        user.setRole("USER");
 
         userRepository.save(user);
 
