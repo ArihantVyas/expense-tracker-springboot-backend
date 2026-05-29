@@ -4,7 +4,6 @@ import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.repository.UserRepository;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,9 +46,23 @@ public class UserService {
 
     public String deleteUser(){
 
-
+        User user = getAuthenticatedUser();
+        userRepository.delete(user);
 
         return "User deleted";
     }
+
+    public String updateUser(UserRegisterDto updUsr){
+        User user = getAuthenticatedUser();
+
+        user.setUsername(updUsr.getUsername());
+        user.setPassword(passwordEncoder.encode(updUsr.getPassword()));
+        user.setEmail(updUsr.getEmail());
+
+        userRepository.save(user);
+
+        return "User Updated";
+    }
+
 
 }

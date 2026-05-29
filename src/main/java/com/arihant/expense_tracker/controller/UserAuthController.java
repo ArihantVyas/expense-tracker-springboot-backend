@@ -26,5 +26,10 @@ public class UserAuthController {
         return userService.deleteUser();
     }
 
+    @PatchMapping("/update-usr")
+    public String updateUser(@RequestBody UserRegisterDto updUsr){
+        return userService.updateUser(updUsr);
+    }
+
 
 }
