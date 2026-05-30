@@ -1,9 +1,16 @@
 package com.arihant.expense_tracker.service;
 
 import com.arihant.expense_tracker.dto.AdminFetchUsersDto;
+import com.arihant.expense_tracker.dto.UserLoginDto;
 import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.repository.UserRepository;
+import com.arihant.expense_tracker.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +24,14 @@ public class UserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
+    private JwtUtil jwtUtil;
 
-    public UserService(PasswordEncoder passwordEncoder,UserRepository userRepository) {
+    public UserService(PasswordEncoder passwordEncoder,UserRepository userRepository,AuthenticationManager authenticationManager,JwtUtil jwtUtil) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
     public User getAuthenticatedUser(){
@@ -85,6 +96,19 @@ public class UserService {
 
         return usersDtoList;
 
+    }
+
+    public ResponseEntity<String> loginAndGetJwtToken(UserLoginDto dto){
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(),dto.getPassword()));
+            String jwtToken =  jwtUtil.generateToken(dto.getUsername());
+            return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getClass().getName(),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
 

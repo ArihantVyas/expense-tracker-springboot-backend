@@ -1,9 +1,11 @@
 package com.arihant.expense_tracker.controller;
 
 import com.arihant.expense_tracker.dto.AdminFetchUsersDto;
+import com.arihant.expense_tracker.dto.UserLoginDto;
 import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +39,11 @@ public class UserAuthController {
     @GetMapping("/get-all-users")
     public List<AdminFetchUsersDto> getAllUsersForAdmin(){
         return userService.getAllUsersForAdmin();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> userLogin(@RequestBody UserLoginDto dto){
+        return userService.loginAndGetJwtToken(dto);
     }
 
 
