@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,6 +23,15 @@ public class SecurityConfig{
     private UserDetailsServiceImplmt userDetailsService;
     private JwtFilter jwtFilter;
 
+    private final String[] PUBLIC_URLs = {
+            "/test/**",
+            "/user/register",
+            "/user/login",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/v2/api-docs/**"
+    };
+
     public SecurityConfig(UserDetailsServiceImplmt userDetailsService,JwtFilter jwtFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
@@ -39,7 +47,7 @@ public class SecurityConfig{
 
         http.csrf(csrfConfObj -> csrfConfObj.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test/**","/user/register","/user/login").permitAll()
+                        .requestMatchers(PUBLIC_URLs).permitAll()
                         .requestMatchers("/user/get-all-users").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
