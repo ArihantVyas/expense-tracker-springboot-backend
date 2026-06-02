@@ -8,6 +8,8 @@ import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.exception.ResourceNotFoundException;
 import com.arihant.expense_tracker.repository.ExpenseRepository;
 import com.arihant.expense_tracker.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepo;
     private final UserRepository userRepo;
+
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
 
     public ExpenseService(ExpenseRepository expenseRepo,UserRepository userRepo) {
         this.expenseRepo = expenseRepo;
@@ -53,6 +57,9 @@ public class ExpenseService {
         newExp.setUser(getAuthenticatedUser());
 
         Expense expenseRes = expenseRepo.save(newExp);
+
+        logger.info("New expense saved to the database");
+
         ExpenseResponseDto responseDto = new ExpenseResponseDto();
 
         responseDto.setId(expenseRes.getExpId());
@@ -68,6 +75,8 @@ public class ExpenseService {
     }
 
     public List<ExpenseResponseDto> getAll(){
+
+        logger.info("User with username = {} fetched their expenses",getAuthenticatedUser().getUsername());
 
         List<Expense> expenseResList = expenseRepo.findByUser(getAuthenticatedUser());
         List<ExpenseResponseDto> resDtoList = new ArrayList<>();
@@ -106,14 +115,18 @@ public class ExpenseService {
 
         expenseRepo.delete(exp);
 
+        logger.warn("An expense has been deleted");
+
         return "Expense deleted";
     }
 
     public ExpenseResponseDto updateExpense(Long expId, ExpenseUpdateRequestDto requestDto){
 
         User user = getAuthenticatedUser();
-        Expense expense = expenseRepo.findByExpIdAndUser(expId,user).orElseThrow(() ->
-                new ResourceNotFoundException("Expense not found"));
+        Expense expense = expenseRepo.findByExpIdAndUser(expId,user).orElseThrow(() -> {
+            logger.warn("ResourceNotFoundException : Expense not found with expId={}",expId);
+            return  new ResourceNotFoundException("Expense not found");
+        });
 
         if(requestDto.getTitle() != null){
             expense.setTitle(requestDto.getTitle());

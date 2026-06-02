@@ -6,6 +6,8 @@ import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.entity.User;
 import com.arihant.expense_tracker.repository.UserRepository;
 import com.arihant.expense_tracker.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -57,6 +61,8 @@ public class UserService {
 
         userRepository.save(newUser);
 
+        logger.info("New user registered.");
+
         return "User registered successfully";
     }
 
@@ -64,6 +70,8 @@ public class UserService {
 
         User user = getAuthenticatedUser();
         userRepository.delete(user);
+
+        logger.warn("A user has been deleted");
 
         return "User deleted";
     }
@@ -78,10 +86,15 @@ public class UserService {
 
         userRepository.save(user);
 
+        logger.warn("A user has been updated");
+
         return "User Updated";
     }
 
     public List<AdminFetchUsersDto> getAllUsersForAdmin(){
+
+        logger.warn("Request received to fetch all usernames.Verify if it is the \"ADMIN\" sending the request");
+
         List<User> users = userRepository.findAll();
         List<AdminFetchUsersDto> usersDtoList = new ArrayList<>();
 
@@ -102,10 +115,13 @@ public class UserService {
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(),dto.getPassword()));
             String jwtToken =  jwtUtil.generateToken(dto.getUsername());
+
+            logger.info("User = {} made a login and got a JWT token",dto.getUsername());
             return new ResponseEntity<>(jwtToken, HttpStatus.OK);
         }
         catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage(), e.getClass());
+
             return new ResponseEntity<>(e.getClass().getName(),
                     HttpStatus.BAD_REQUEST);
         }
