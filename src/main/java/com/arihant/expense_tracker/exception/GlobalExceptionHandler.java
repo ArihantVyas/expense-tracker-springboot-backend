@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         errorResponse.dateTime = LocalDateTime.now();
         errorResponse.status_code = HttpStatus.NOT_FOUND.value();
 
-        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
 
     }
 }
