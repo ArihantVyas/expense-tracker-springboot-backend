@@ -4,6 +4,7 @@ import com.arihant.expense_tracker.dto.AdminFetchUsersDto;
 import com.arihant.expense_tracker.dto.UserLoginDto;
 import com.arihant.expense_tracker.dto.UserRegisterDto;
 import com.arihant.expense_tracker.entity.User;
+import com.arihant.expense_tracker.exception.ResourceNotFoundException;
 import com.arihant.expense_tracker.repository.UserRepository;
 import com.arihant.expense_tracker.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -29,12 +30,18 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
     private JwtUtil jwtUtil;
+    private MailService mailService;
 
-    public UserService(PasswordEncoder passwordEncoder,UserRepository userRepository,AuthenticationManager authenticationManager,JwtUtil jwtUtil) {
+    public UserService(PasswordEncoder passwordEncoder,
+                       UserRepository userRepository,
+                       AuthenticationManager authenticationManager,
+                       JwtUtil jwtUtil,
+                       MailService mailService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.mailService = mailService;
     }
 
     public User getAuthenticatedUser(){
@@ -115,6 +122,17 @@ public class UserService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(),dto.getPassword()));
             String jwtToken =  jwtUtil.generateToken(dto.getUsername());
 
+
+            User user = userRepository.findByUsername(dto.getUsername())
+                    .orElseThrow(() ->new ResourceNotFoundException("Username does not exist"));
+            String toMailId = user.getEmail();
+
+            String mailBody = "You have successfully logged in to your account." +
+                    "Your JWT token will expire in 1 hour" +
+                    "Your JWT token is : "+jwtToken;
+            String subject = "Login successful notification";
+
+            mailService.sendMail(toMailId,subject,mailBody);
             logger.info("User = {} made a login and got a JWT token",dto.getUsername());
             return new ResponseEntity<>(jwtToken, HttpStatus.OK);
         }
