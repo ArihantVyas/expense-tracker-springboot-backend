@@ -29,7 +29,8 @@ public class SecurityConfig{
             "/user/login",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/v2/api-docs/**"
+            "/v2/api-docs/**",
+            "/market/**"
     };
 
     public SecurityConfig(UserDetailsServiceImplmt userDetailsService,JwtFilter jwtFilter) {
