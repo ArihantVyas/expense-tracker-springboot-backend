@@ -29,14 +29,14 @@ public class MarketDataService {
 
     public ConversionRateResponseDto fetchCurrencyExchange(ConversionRateRequestDto dto){
 
-        if(cache.cacheStatus(dto) == CacheStatus.CACHE_HIT) cache.getFromCache(dto);
+        String baseCurr = dto.getBaseCurr();
+        String toCurr = dto.getToCurr();
+        Double convertedValue;
 
-        else if(cache.cacheStatus(dto) == CacheStatus.CACHE_MISS) {
-
-            String baseCurr = dto.getBaseCurr();
-            String toCurr = dto.getToCurr();
-            Double convertedValue;
-
+        if(cache.cacheStatus(dto) == CacheStatus.CACHE_HIT){
+            convertedValue = cache.getFromCache(dto);
+            return new ConversionRateResponseDto(baseCurr,toCurr,convertedValue);
+        } else if(cache.cacheStatus(dto) == CacheStatus.CACHE_MISS) {
 
             String finalExchangeUrl = exchangeUrl.replace("EXCHANGE_API_KEY",EXCHANGE_CURRENCY_API_KEY).replace("BASE_CURR",baseCurr);
             ResponseEntity<ConversionRatesFetchResponse> response = restTemplate.exchange(finalExchangeUrl, HttpMethod.GET,null, ConversionRatesFetchResponse.class);
@@ -46,9 +46,7 @@ public class MarketDataService {
             cache.storeInCache(dto,convertedValue);
 
             return new ConversionRateResponseDto(baseCurr,toCurr,convertedValue);
-
         }
-
         return null;
     }
 }
