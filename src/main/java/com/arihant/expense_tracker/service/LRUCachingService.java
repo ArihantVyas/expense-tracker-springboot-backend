@@ -48,7 +48,7 @@ public class LRUCachingService {
     public void clearCache(){
         // Locking writeLock so that multiple threads cannot modify concurrently and no thread can read while writing operation
         readWriteLock.writeLock().lock();
-        logger.info("Write log engaged by thread : "+Thread.currentThread().getName());
+        logger.info("Write Lock engaged by thread : "+Thread.currentThread().getName());
         try{
             currencyCache.clear();
             logger.info("Cache cleared");
@@ -67,7 +67,7 @@ public class LRUCachingService {
 
         // Executing the readLock so many threads can read concurrently but a thread cannot perform write operation during read operation
         readWriteLock.readLock().lock();
-        logger.info("Read log engaged by thread : "+Thread.currentThread().getName());
+        logger.info("Read Lock engaged by thread : "+Thread.currentThread().getName());
 
         try{
             if(currencyCache.containsKey(requestDto)){
@@ -93,7 +93,7 @@ public class LRUCachingService {
           corruption of LinkedList or remove any possibility of Dead Lock.
         */
         readWriteLock.writeLock().lock();
-        logger.info("Write log engaged by thread : "+Thread.currentThread().getName());
+        logger.info("Write Lock engaged by thread : "+Thread.currentThread().getName());
         try{
             if(currencyCache.containsKey(requestDto)){
                 // This is the most recently used node
@@ -124,7 +124,7 @@ public class LRUCachingService {
 
         // Locking writeLock so that multiple threads cannot modify concurrently and no thread can read while writing operation
         readWriteLock.writeLock().lock();
-        logger.info("Write log engaged by thread : "+Thread.currentThread().getName());
+        logger.info("Write Lock engaged by thread : "+Thread.currentThread().getName());
 
         try{
             CacheNode newNode = new CacheNode();
