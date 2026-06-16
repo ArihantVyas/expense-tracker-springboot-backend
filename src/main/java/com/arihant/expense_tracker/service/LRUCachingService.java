@@ -4,6 +4,7 @@ import com.arihant.expense_tracker.dto.ConversionRateRequestDto;
 import com.arihant.expense_tracker.enums.CacheStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class LRUCachingService {
     private final CacheNode dummyTail;
     private final HashMap<ConversionRateRequestDto, CacheNode> currencyCache;
 
-    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
 
     public LRUCachingService() {
@@ -45,6 +46,7 @@ public class LRUCachingService {
 
     }
 
+    @Scheduled(cron = "0 0 20 * * *", zone = "Asia/Kolkata")
     public void clearCache(){
         // Locking writeLock so that multiple threads cannot modify concurrently and no thread can read while writing operation
         readWriteLock.writeLock().lock();
